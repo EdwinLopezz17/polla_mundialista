@@ -74,8 +74,7 @@ export function renderLeaderboard(ranking, partidos) {
     return { headers, rows, colCount: 4 + jugados.length };
 }
 
-export function renderApuestasVisibles(usuarios, partidos, apuestas) {
-    const ahora = Date.now();
+export function renderApuestasVisibles(usuarios, partidos, apuestas, ahora = Date.now()) {
     const cerrados = partidos.filter(p => ahora >= new Date(p.fechaHora).getTime() - 15 * 60 * 1000).reverse();
     if (!cerrados.length) return '<p class="state-empty">Aún no cerró ningún partido.</p>';
 

@@ -1,13 +1,24 @@
-import { fetchUsuarios, fetchUsuario, fetchPartidos, fetchPartido, fetchApuesta, fetchTodasLasApuestas, savePronostico } from "./db.js";
+import { fetchUsuarios, fetchUsuario, fetchPartidos, fetchPartido, fetchApuesta, fetchTodasLasApuestas, savePronostico, getServerTimeOffset } from "./db.js";
 import { calcularRanking } from "./scoring.js";
 import { $, el, formatResult, renderMatchCard, renderLeaderboard, renderApuestasVisibles } from "./ui.js";
 
 let user = null;
 let partidosCache = [];
 const CUTOFF_MS = 15 * 60 * 1000;
-const vencido = p => Date.now() >= new Date(p.fechaHora).getTime() - CUTOFF_MS;
+
+let serverOffset = 0;
+const serverNow = () => Date.now() + serverOffset;
+
+const vencido = p => serverNow() >= new Date(p.fechaHora).getTime() - CUTOFF_MS;
+
+async function sincronizarReloj() {
+    try { serverOffset = await getServerTimeOffset(); }
+    catch (e) { console.error('No se pudo sincronizar el reloj con el servidor:', e); }
+}
 
 window.addEventListener('DOMContentLoaded', async () => {
+    await sincronizarReloj();
+    setInterval(sincronizarReloj, 5 * 60 * 1000);
     try {
         const usuarios = await fetchUsuarios();
         const sel = $('player-select');
@@ -81,9 +92,6 @@ function bindCardEvents() {
             const card = this.closest('.match-card');
             const matchId = card.dataset.matchId;
 
-            // Validación crítica: se relee el partido directo de Firestore,
-            // NO se confía en el caché local. Así, aunque la pestaña lleve
-            // horas abierta, el corte de 15 min se evalúa con el dato real.
             let fresco;
             try { fresco = await fetchPartido(matchId); } catch { return alert('Error de conexión. Intenta nuevamente.'); }
 
@@ -174,7 +182,7 @@ async function loadTabla() {
 
         const extra = el('div', '', `
             <div class="section-header" style="margin-top:22px;"><h3 class="section-title" style="font-size:17px;">Apuestas de partidos cerrados</h3><p class="section-desc">Solo visibles una vez cerrada la hora de apuesta.</p></div>
-            ${renderApuestasVisibles(usuarios, partidos, apuestas)}`);
+            ${renderApuestasVisibles(usuarios, partidos, apuestas, serverNow())}`);
         w.appendChild(extra);
     } catch (e) { console.error(e); w.innerHTML = `<p class="state-error">Error al calcular la tabla.</p>`; }
 }

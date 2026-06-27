@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polla Pro — Eliminatorias</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-screen" class="screen active">
+        <div class="auth-card">
+            <div class="auth-logo">PE</div>
+            <h1>Polla Eliminatorias</h1>
+            <p>Selecciona tu usuario e ingresa tu PIN</p>
+            <div class="form-group">
+                <label for="player-select">Participante</label>
+                <select id="player-select">
+                    <option value="">Selecciona tu nombre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="player-pin">PIN Secreto</label>
+                <input type="password" id="player-pin" placeholder="4 dígitos" maxlength="4">
+            </div>
+            <button id="btn-login" class="btn-primary">Ingresar</button>
+        </div>
+    </div>
+
+    <nav id="main-nav" class="navbar hidden">
+        <div class="nav-brand">
+            <span class="nav-logo">PE</span>
+            <span id="nav-username" class="nav-user">Usuario</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" data-target="screen-apostar">Apostar</button>
+            <button class="nav-btn" data-target="screen-mis-apuestas">Mis Apuestas</button>
+            <button class="nav-btn" data-target="screen-posiciones">Tabla</button>
+        </div>
+    </nav>
+
+    <div class="container main-content hidden" id="main-container">
+
+        <div id="screen-apostar" class="sub-screen active">
+            <div class="section-header">
+                <h2 class="section-title">Partidos disponibles</h2>
+                <p class="section-desc">Las apuestas se cierran 15 minutos antes del inicio.</p>
+            </div>
+
+            <div class="rules-block">
+                <div class="rules-header">
+                    <span class="rules-label">Cómo se puntúa</span>
+                    <button class="rules-toggle" id="rules-toggle" aria-expanded="false">Ver reglas</button>
+                </div>
+                <div class="rules-body" id="rules-body">
+                    <p class="rules-intro">Cada partido tiene dos preguntas: el resultado a 90 minutos + tiempo extra y, si apostás empate, quién clasifica en penales.</p>
+                    <div class="rules-pills">
+                        <div class="rules-pill pill-win">
+                            <div class="pill-pts">2 pts</div>
+                            <div class="pill-desc">Acertás que gana un equipo en 90' + tiempo extra</div>
+                        </div>
+                        <div class="rules-pill pill-draw-full">
+                            <div class="pill-pts">2 pts</div>
+                            <div class="pill-desc">Acertás empate <strong>y</strong> quién clasifica en penales</div>
+                        </div>
+                        <div class="rules-pill pill-draw-half">
+                            <div class="pill-pts">1 pt</div>
+                            <div class="pill-desc">Acertás empate pero fallás quién clasifica</div>
+                        </div>
+                        <div class="rules-pill pill-miss">
+                            <div class="pill-pts">0 pts</div>
+                            <div class="pill-desc">Fallás el resultado de 90' + tiempo extra</div>
+                        </div>
+                    </div>
+                    <div class="rules-table-wrap">
+                        <table class="rules-table">
+                            <thead>
+                                <tr>
+                                    <th>Tu apuesta 90' + TE</th>
+                                    <th>Tu clasifica</th>
+                                    <th>Resultado real</th>
+                                    <th>Clasifica real</th>
+                                    <th>Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gana Local</td>
+                                    <td class="cell-muted">—</td>
+                                    <td>Gana Local</td>
+                                    <td class="cell-muted">—</td>
+                                    <td class="cell-pts pts-2">2</td>
+                                </tr>
+                                <tr>
+                                    <td>Gana Visita</td>
+                                    <td class="cell-muted">—</td>
+                                    <td>Gana Visita</td>
+                                    <td class="cell-muted">—</td>
+                                    <td class="cell-pts pts-2">2</td>
+                                </tr>
+                                <tr>
+                                    <td>Empate (X)</td>
+                                    <td>Local</td>
+                                    <td>Empate (X)</td>
+                                    <td>Local</td>
+                                    <td class="cell-pts pts-2">2</td>
+                                </tr>
+                                <tr>
+                                    <td>Empate (X)</td>
+                                    <td>Visita</td>
+                                    <td>Empate (X)</td>
+                                    <td>Visita</td>
+                                    <td class="cell-pts pts-2">2</td>
+                                </tr>
+                                <tr>
+                                    <td>Empate (X)</td>
+                                    <td>Local</td>
+                                    <td>Empate (X)</td>
+                                    <td>Visita</td>
+                                    <td class="cell-pts pts-1">1</td>
+                                </tr>
+                                <tr>
+                                    <td>Empate (X)</td>
+                                    <td>Visita</td>
+                                    <td>Empate (X)</td>
+                                    <td>Local</td>
+                                    <td class="cell-pts pts-1">1</td>
+                                </tr>
+                                <tr class="row-miss">
+                                    <td>Cualquiera</td>
+                                    <td class="cell-muted">—</td>
+                                    <td>Distinto</td>
+                                    <td class="cell-muted">—</td>
+                                    <td class="cell-pts pts-0">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="rules-note">Acertar el resultado vale siempre 2 pts, ya sea ganador directo o empate con penales correctos. Si acertás empate pero fallás quién clasifica, obtenés 1 pt.</p>
+                </div>
+            </div>
+
+            <div id="fixture-container" class="cards-grid"></div>
+        </div>
+
+        <div id="screen-mis-apuestas" class="sub-screen hidden">
+            <div class="section-header">
+                <h2 class="section-title">Mis apuestas</h2>
+                <p class="section-desc">Pronósticos guardados en la base de datos.</p>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Partido</th>
+                            <th>Pronóstico 90' + TE</th>
+                            <th>Clasifica</th>
+                        </tr>
+                    </thead>
+                    <tbody id="my-bets-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="screen-posiciones" class="sub-screen hidden">
+            <div class="section-header">
+                <h2 class="section-title">Tabla de posiciones</h2>
+                <p class="section-desc">Calculada en tiempo real con resultados oficiales.</p>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Participante</th>
+                            <th>Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script>
+        document.getElementById("rules-toggle").addEventListener("click", function () {
+            const body = document.getElementById("rules-body");
+            const open = this.getAttribute("aria-expanded") === "true";
+            this.setAttribute("aria-expanded", String(!open));
+            this.textContent = open ? "Ver reglas" : "Ocultar";
+            body.classList.toggle("open", !open);
+        });
+    </script>
+</body>
+</html>

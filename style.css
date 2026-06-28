@@ -579,7 +579,87 @@ select:focus, input[type="password"]:focus {
     -webkit-overflow-scrolling: touch;
 }
 
-/* ── F1-style compact leaderboard ── */
+.leaderboard-table th,
+.leaderboard-table td {
+    white-space: nowrap;
+}
+
+.col-pts {
+    width: 54px;
+    font-size: 11px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.pts-cell-win  { color: var(--accent);   font-weight: 700; }
+.pts-cell-draw { color: var(--gold);     font-weight: 700; }
+.pts-cell-miss { color: var(--text-muted); }
+
+.rank-name  { font-weight: 600; }
+.rank-base  { color: var(--text-soft); font-weight: 600; }
+.rank-pos.silver { color: #94a3b8; }
+.rank-pos.bronze { color: #b45309; }
+
+.match-label { font-weight: 700; font-size: 14px; }
+.match-sub   { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.cell-muted { color: var(--text-muted); }
+
+/* ── Mis apuestas: secciones resueltos / pendientes ── */
+.bets-section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--success);
+    margin-bottom: 10px;
+    padding-left: 2px;
+}
+.bets-section-pending { color: var(--text-muted); }
+.bets-section-icon { font-size: 14px; }
+
+/* Filas con resultado */
+.row-win  { background: rgba(16, 185, 129, 0.04); }
+.row-loss { background: rgba(239, 68, 68, 0.04); }
+.row-win:hover  { background: rgba(16, 185, 129, 0.08) !important; }
+.row-loss:hover { background: rgba(239, 68, 68, 0.07) !important; }
+
+/* Badges con color */
+.bet-badge.badge-win {
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--success);
+}
+.bet-badge.badge-loss {
+    background: rgba(239, 68, 68, 0.10);
+    color: #ef4444;
+}
+
+/* Puntos resultado */
+.pts-result {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+.pts-win {
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--success);
+}
+.pts-loss {
+    background: rgba(239, 68, 68, 0.10);
+    color: #ef4444;
+}
+
+/* ══════════════════════════════════════════════════════
+   F1-style compact leaderboard & bets tables
+   (Tabla de posiciones + Apuestas cerradas)
+   ══════════════════════════════════════════════════════ */
+
+/* Override the generic leaderboard-table to be dense */
 .leaderboard-table {
     font-size: 12px;
     border-collapse: collapse;
@@ -599,6 +679,7 @@ select:focus, input[type="password"]:focus {
     color: var(--text-muted);
     text-align: center;
     white-space: nowrap;
+    border-bottom: none;
 }
 
 .leaderboard-table th:nth-child(2) { text-align: left; }
@@ -617,102 +698,50 @@ select:focus, input[type="password"]:focus {
     white-space: nowrap;
     vertical-align: middle;
     text-align: center;
+    border-bottom: none;
 }
 
 .leaderboard-table td:nth-child(2) { text-align: left; }
 
-/* Position column */
+/* Position cell */
 .lb-pos {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-size: 11px;
     font-weight: 800;
-    min-width: 28px;
-    display: inline-block;
-    text-align: center;
     color: var(--text-muted);
+}
+.lb-pos::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 12px;
+    border-radius: 2px;
+    background: transparent;
 }
 .lb-pos.gold   { color: var(--gold); }
+.lb-pos.gold::before   { background: var(--gold); }
 .lb-pos.silver { color: #94a3b8; }
+.lb-pos.silver::before { background: #94a3b8; }
 .lb-pos.bronze { color: #cd7f32; }
+.lb-pos.bronze::before { background: #cd7f32; }
 
-/* Name column */
-.lb-name {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--text);
-}
+/* Name / base / total */
+.lb-name  { font-weight: 600; font-size: 13px; color: var(--text); }
+.lb-base  { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.lb-total { font-weight: 800; font-size: 13px; color: var(--accent); }
 
-/* Base pts column */
-.lb-base {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-/* Per-match point cells */
-.col-pts {
+/* Per-match columns override */
+.leaderboard-table .col-pts {
     width: 40px;
     min-width: 36px;
-    font-size: 10px;
-    line-height: 1.3;
-    text-align: center;
 }
+.leaderboard-table .pts-cell-win  { font-size: 13px; font-weight: 800; }
+.leaderboard-table .pts-cell-draw { font-size: 13px; font-weight: 700; }
+.leaderboard-table .pts-cell-miss { font-size: 12px; }
 
-.pts-cell-win {
-    color: var(--accent);
-    font-weight: 800;
-    font-size: 13px;
-}
-.pts-cell-draw {
-    color: var(--gold);
-    font-weight: 700;
-    font-size: 13px;
-}
-.pts-cell-miss {
-    color: var(--text-muted);
-    font-size: 12px;
-}
-
-/* Total column */
-.lb-total {
-    font-weight: 800;
-    font-size: 13px;
-    color: var(--accent);
-    min-width: 60px;
-}
-
-/* Left accent bar on 1st row */
-.leaderboard-table tbody tr:first-child .lb-pos::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 12px;
-    background: var(--gold);
-    border-radius: 2px;
-    margin-right: 5px;
-    vertical-align: middle;
-}
-.leaderboard-table tbody tr:nth-child(2) .lb-pos::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 12px;
-    background: #94a3b8;
-    border-radius: 2px;
-    margin-right: 5px;
-    vertical-align: middle;
-}
-.leaderboard-table tbody tr:nth-child(3) .lb-pos::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 12px;
-    background: #cd7f32;
-    border-radius: 2px;
-    margin-right: 5px;
-    vertical-align: middle;
-}
-
-/* ── Apuestas visibles table (same density) ── */
+/* ── Apuestas cerradas compact (bets-table) ── */
 .bets-table {
     font-size: 12px;
     border-collapse: collapse;
@@ -730,6 +759,7 @@ select:focus, input[type="password"]:focus {
     color: var(--text-muted);
     text-align: center;
     white-space: nowrap;
+    border-bottom: none;
 }
 .bets-table th:first-child { text-align: left; }
 .bets-table tbody tr {
@@ -741,9 +771,15 @@ select:focus, input[type="password"]:focus {
     white-space: nowrap;
     vertical-align: middle;
     text-align: center;
+    border-bottom: none;
 }
-.bets-table td:first-child { text-align: left; font-weight: 600; font-size: 13px; }
+.bets-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+}
 
+/* Small pill inside bets-table cells */
 .bet-pill {
     display: inline-block;
     font-size: 10px;
@@ -760,13 +796,3 @@ select:focus, input[type="password"]:focus {
     display: block;
     margin-top: 2px;
 }
-
-.rank-name  { font-weight: 600; }
-.rank-base  { color: var(--text-soft); font-weight: 600; }
-.rank-pos.silver { color: #94a3b8; }
-.rank-pos.bronze { color: #b45309; }
-
-.match-label { font-weight: 700; font-size: 14px; }
-.match-sub   { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-
-.cell-muted { color: var(--text-muted); }

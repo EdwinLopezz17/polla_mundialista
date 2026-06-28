@@ -146,9 +146,9 @@ function bindCardEvents() {
 }
 
 async function loadMisApuestas() {
-    const tbody = $('my-bets-table-body');
-    if (!tbody) return;
-    tbody.innerHTML = emptyRow(3, 'Cargando tus apuestas...');
+    const wrap = $('mis-apuestas-wrap');
+    if (!wrap) return;
+    wrap.innerHTML = `<p class="state-empty">Cargando tus apuestas...</p>`;
 
     try {
         const [partidos, apuesta] = await Promise.all([
@@ -157,47 +157,117 @@ async function loadMisApuestas() {
         ]);
 
         if (!apuesta) {
-            tbody.innerHTML = emptyRow(3, 'No se encontraron apuestas para tu usuario.');
+            wrap.innerHTML = `<p class="state-empty">No se encontraron apuestas para tu usuario.</p>`;
             return;
         }
 
-        const mapaPartidos = Object.fromEntries(partidos.map(p => [p.id, p]));
-        const misVotos     = apuesta.pronosticos ?? {};
-        const ids          = Object.keys(misVotos);
-
-        if (!ids.length) {
-            tbody.innerHTML = emptyRow(3, 'Aún no has guardado ningún partido.');
+        const misVotos = apuesta.pronosticos ?? {};
+        if (!Object.keys(misVotos).length) {
+            wrap.innerHTML = `<p class="state-empty">Aún no has guardado ningún partido.</p>`;
             return;
         }
 
-        let html = '';
-        for (const matchId of ids) {
-            const voto = misVotos[matchId];
-            const p    = mapaPartidos[matchId];
-            if (!p) continue;
+        // Separar partidos en resueltos y pendientes
+        const resueltos  = partidos.filter(p => p.resultado90_real && misVotos[p.id]);
+        const pendientes = partidos.filter(p => !p.resultado90_real && misVotos[p.id]);
 
-            const resTexto       = formatResult(voto.resultado90, p.local, p.visitante);
+        function buildRow(p, voto, conResultado) {
+            const resTexto = formatResult(voto.resultado90, p.local, p.visitante);
             const clasificaTexto = voto.resultado90 === 'X'
                 ? (voto.clasifica === '1' ? p.local : p.visitante)
                 : null;
 
-            html += `
-                <tr>
+            if (!conResultado) {
+                return `
+                    <tr>
+                        <td>
+                            <div class="match-label">${p.local} vs ${p.visitante}</div>
+                            <div class="match-sub">${p.fase ?? 'Fase Eliminatoria'}</div>
+                        </td>
+                        <td class="col-center"><span class="bet-badge">${resTexto}</span></td>
+                        <td class="col-center">${clasificaTexto
+                            ? `<span class="bet-badge qualify">${clasificaTexto}</span>`
+                            : `<span class="cell-muted">—</span>`}</td>
+                        <td class="col-center"><span class="cell-muted">Pendiente</span></td>
+                    </tr>`;
+            }
+
+            // Calcular puntos
+            const acerto90 = voto.resultado90 === p.resultado90_real;
+            let pts = 0;
+            if (acerto90) {
+                pts = p.resultado90_real === 'X'
+                    ? (voto.clasifica === p.clasifica_real ? 3 : 2)
+                    : 4;
+            }
+            const ganó = pts > 0;
+
+            return `
+                <tr class="${ganó ? 'row-win' : 'row-loss'}">
                     <td>
                         <div class="match-label">${p.local} vs ${p.visitante}</div>
                         <div class="match-sub">${p.fase ?? 'Fase Eliminatoria'}</div>
                     </td>
-                    <td class="col-center"><span class="bet-badge">${resTexto}</span></td>
+                    <td class="col-center"><span class="bet-badge ${ganó ? 'badge-win' : 'badge-loss'}">${resTexto}</span></td>
                     <td class="col-center">${clasificaTexto
-                        ? `<span class="bet-badge qualify">${clasificaTexto}</span>`
-                        : `<span class="cell-muted">—</span>`
-                    }</td>
+                        ? `<span class="bet-badge ${ganó ? 'badge-win' : 'badge-loss'} qualify">${clasificaTexto}</span>`
+                        : `<span class="cell-muted">—</span>`}</td>
+                    <td class="col-center">
+                        <span class="pts-result ${ganó ? 'pts-win' : 'pts-loss'}">
+                            ${ganó ? `+${pts} pts` : '0 pts'}
+                        </span>
+                    </td>
                 </tr>`;
         }
 
-        tbody.innerHTML = html || emptyRow(3, 'Tus apuestas no coinciden con los partidos actuales.');
-    } catch {
-        tbody.innerHTML = emptyRow(3, 'Error al leer tus apuestas.', 'state-error');
+        const colHeaders = `
+            <thead>
+                <tr>
+                    <th>Partido / Fase</th>
+                    <th class="col-center col-md">Pronóstico</th>
+                    <th class="col-center col-lg">Clasifica</th>
+                    <th class="col-center col-sm">Pts</th>
+                </tr>
+            </thead>`;
+
+        let html = '';
+
+        if (resueltos.length) {
+            const rowsResueltos = resueltos.map(p => buildRow(p, misVotos[p.id], true)).join('');
+            html += `
+                <div class="bets-section-label">
+                    <span class="bets-section-icon">✓</span> Partidos resueltos
+                </div>
+                <div class="table-responsive" style="margin-bottom: 24px;">
+                    <table class="data-table">
+                        ${colHeaders}
+                        <tbody>${rowsResueltos}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        if (pendientes.length) {
+            const rowsPendientes = pendientes.map(p => buildRow(p, misVotos[p.id], false)).join('');
+            html += `
+                <div class="bets-section-label bets-section-pending">
+                    <span class="bets-section-icon">◷</span> Partidos pendientes
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        ${colHeaders}
+                        <tbody>${rowsPendientes}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        if (!html) {
+            html = `<p class="state-empty">Tus apuestas no coinciden con los partidos actuales.</p>`;
+        }
+
+        wrap.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+        wrap.innerHTML = `<p class="state-error">Error al leer tus apuestas.</p>`;
     }
 }
 

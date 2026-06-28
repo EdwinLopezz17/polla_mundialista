@@ -65,31 +65,32 @@ export function renderLeaderboard(ranking, partidos) {
     const partidosConResultado = partidos.filter(p => p.resultado90_real);
 
     const headers = [
-        '<th class="col-sm">Pos</th>',
-        '<th>Participante</th>',
-        '<th class="col-center col-sm">Base</th>',
+        '<th style="width:44px">Pos</th>',
+        '<th style="text-align:left">Participante</th>',
+        '<th class="col-pts" title="Puntaje base">Base</th>',
         ...partidosConResultado.map(p =>
-            `<th class="col-center col-pts" title="${p.local} vs ${p.visitante}">${p.local.substring(0,3).toUpperCase()}<br>vs<br>${p.visitante.substring(0,3).toUpperCase()}</th>`
+            `<th class="col-pts" title="${p.local} vs ${p.visitante}">${p.local.substring(0,3).toUpperCase()}<br>vs<br>${p.visitante.substring(0,3).toUpperCase()}</th>`
         ),
-        '<th class="col-center col-md">Total</th>',
+        '<th style="width:64px">Total</th>',
     ].join('');
 
     let pos = 1;
     const rows = ranking.map(({ nombre, puntajeBase, porPartido, total }, i) => {
         if (i > 0 && ranking[i].total < ranking[i - 1].total) pos++;
+        const medal = rankClass(pos - 1);
         const celdas = partidosConResultado.map(p => {
             const pts = porPartido[p.id] ?? 0;
             const cls = pts >= 3 ? 'pts-cell-win' : pts === 2 ? 'pts-cell-draw' : 'pts-cell-miss';
-            return `<td class="col-center ${cls}">${pts > 0 ? pts : '—'}</td>`;
+            return `<td class="${cls}">${pts > 0 ? pts : '<span style="color:var(--border)">—</span>'}</td>`;
         }).join('');
 
         return `
             <tr>
-                <td><span class="rank-pos ${rankClass(pos - 1)}">#${pos}</span></td>
-                <td class="rank-name">${nombre}</td>
-                <td class="col-center rank-base">${puntajeBase}</td>
+                <td><span class="lb-pos ${medal}">${pos}</span></td>
+                <td><span class="lb-name">${nombre}</span></td>
+                <td class="lb-base">${puntajeBase}</td>
                 ${celdas}
-                <td class="rank-pts">${total} pts</td>
+                <td class="lb-total">${total}</td>
             </tr>`;
     }).join('');
 
@@ -109,7 +110,7 @@ export function renderApuestasVisibles(usuarios, partidos, apuestas) {
     const headers = [
         '<th>Participante</th>',
         ...cerrados.map(p =>
-            `<th class="col-center col-pts" title="${p.local} vs ${p.visitante}">
+            `<th class="col-pts" title="${p.local} vs ${p.visitante}">
                 ${p.local.substring(0,3).toUpperCase()}<br>vs<br>${p.visitante.substring(0,3).toUpperCase()}
             </th>`
         ),
@@ -119,27 +120,27 @@ export function renderApuestasVisibles(usuarios, partidos, apuestas) {
         const pronosticos = apuestaMap[u.id] ?? {};
         const celdas = cerrados.map(p => {
             const voto = pronosticos[p.id];
-            if (!voto) return `<td class="col-center cell-muted">—</td>`;
+            if (!voto) return `<td class="cell-muted">—</td>`;
 
-            const resTexto = voto.resultado90 === '1' ? p.local
-                           : voto.resultado90 === '2' ? p.visitante
-                           : 'Empate';
+            const resTexto = voto.resultado90 === '1' ? p.local.substring(0,3).toUpperCase()
+                           : voto.resultado90 === '2' ? p.visitante.substring(0,3).toUpperCase()
+                           : 'Emp';
             const clasTexto = voto.resultado90 === 'X' && voto.clasifica
-                ? (voto.clasifica === '1' ? p.local : p.visitante)
+                ? (voto.clasifica === '1' ? p.local.substring(0,3).toUpperCase() : p.visitante.substring(0,3).toUpperCase())
                 : null;
 
-            return `<td class="col-center">
-                <span class="bet-badge">${resTexto}</span>
-                ${clasTexto ? `<br><span class="bet-badge qualify" style="margin-top:4px">${clasTexto}</span>` : ''}
+            return `<td>
+                <span class="bet-pill">${resTexto}</span>
+                ${clasTexto ? `<span class="bet-pill qualify">${clasTexto}</span>` : ''}
             </td>`;
         }).join('');
 
-        return `<tr><td class="rank-name">${u.nombre}</td>${celdas}</tr>`;
+        return `<tr><td>${u.nombre}</td>${celdas}</tr>`;
     }).join('');
 
     return `
         <div class="table-responsive leaderboard-scroll">
-            <table class="data-table leaderboard-table">
+            <table class="data-table bets-table leaderboard-table">
                 <thead><tr>${headers}</tr></thead>
                 <tbody>${rows}</tbody>
             </table>

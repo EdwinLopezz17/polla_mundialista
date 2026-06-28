@@ -1,6 +1,6 @@
 import { fetchUsuarios, fetchUsuario, fetchPartidos, fetchApuesta, fetchTodasLasApuestas, savePronostico } from "./db.js";
 import { calcularRanking } from "./scoring.js";
-import { $, el, emptyRow, rankClass, formatResult, renderMatchCard, renderLeaderboard } from "./ui.js";
+import { $, el, emptyRow, rankClass, formatResult, renderMatchCard, renderLeaderboard, renderApuestasVisibles } from "./ui.js";
 
 let currentUser    = null;
 let cachedPartidos = [];
@@ -228,6 +228,17 @@ async function loadTabla() {
                     <tbody>${rows}</tbody>
                 </table>
             </div>`;
+
+        const apuestasWrap = document.createElement('div');
+        apuestasWrap.innerHTML = `
+            <div class="section-header" style="margin-top: 32px;">
+                <h3 class="section-title" style="font-size:17px;">Apuestas de partidos cerrados</h3>
+                <p class="section-desc">Solo visibles una vez cerrada la hora de apuesta.</p>
+            </div>
+            ${renderApuestasVisibles(usuarios, partidos, apuestas)}
+        `;
+        wrap.appendChild(apuestasWrap);
+        
     } catch (e) {
         console.error(e);
         wrap.innerHTML = `<p class="state-error">Error al calcular la tabla.</p>`;

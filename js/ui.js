@@ -95,3 +95,53 @@ export function renderLeaderboard(ranking, partidos) {
 
     return { headers, rows, colCount: 4 + partidosConResultado.length };
 }
+
+export function renderApuestasVisibles(usuarios, partidos, apuestas) {
+    const ahora = new Date();
+    const cerrados = partidos.filter(p =>
+        ahora >= new Date(new Date(p.fechaHora).getTime() - 15 * 60 * 1000)
+    );
+
+    if (!cerrados.length) return '<p class="state-empty">Aún no cerró ningún partido.</p>';
+
+    const apuestaMap = Object.fromEntries(apuestas.map(a => [a.id, a.pronosticos ?? {}]));
+
+    const headers = [
+        '<th>Participante</th>',
+        ...cerrados.map(p =>
+            `<th class="col-center col-pts" title="${p.local} vs ${p.visitante}">
+                ${p.local.substring(0,3).toUpperCase()}<br>vs<br>${p.visitante.substring(0,3).toUpperCase()}
+            </th>`
+        ),
+    ].join('');
+
+    const rows = usuarios.map(u => {
+        const pronosticos = apuestaMap[u.id] ?? {};
+        const celdas = cerrados.map(p => {
+            const voto = pronosticos[p.id];
+            if (!voto) return `<td class="col-center cell-muted">—</td>`;
+
+            const resTexto = voto.resultado90 === '1' ? p.local
+                           : voto.resultado90 === '2' ? p.visitante
+                           : 'Empate';
+            const clasTexto = voto.resultado90 === 'X' && voto.clasifica
+                ? (voto.clasifica === '1' ? p.local : p.visitante)
+                : null;
+
+            return `<td class="col-center">
+                <span class="bet-badge">${resTexto}</span>
+                ${clasTexto ? `<br><span class="bet-badge qualify" style="margin-top:4px">${clasTexto}</span>` : ''}
+            </td>`;
+        }).join('');
+
+        return `<tr><td class="rank-name">${u.nombre}</td>${celdas}</tr>`;
+    }).join('');
+
+    return `
+        <div class="table-responsive leaderboard-scroll">
+            <table class="data-table leaderboard-table">
+                <thead><tr>${headers}</tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+}

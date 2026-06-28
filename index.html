@@ -52,33 +52,38 @@
                     <span class="rules-label">Cómo se puntúa</span>
                     <button class="rules-toggle" id="rules-toggle" aria-expanded="false">Ver reglas</button>
                 </div>
+                
                 <div class="rules-body" id="rules-body">
-                    <p class="rules-intro">Cada partido tiene dos preguntas: el resultado y, si hay empate, quién clasifica en penales.</p>
+                    <p class="rules-intro">
+                        <strong>90'</strong> se refiere únicamente a los 90 minutos reglamentarios.
+                        Si el partido termina en empate y va a tiempo extra y penales, eso se apuesta
+                        en la opción <strong>TE + Penales</strong>, que es una pregunta separada.
+                    </p>
                     <div class="rules-pills">
                         <div class="rules-pill pill-win">
-                            <div class="pill-pts">2 pts</div>
-                            <div class="pill-desc">Acertás que gana un equipo</div>
+                            <div class="pill-pts">4 pts</div>
+                            <div class="pill-desc">Acertás que gana un equipo en los 90' reglamentarios</div>
                         </div>
                         <div class="rules-pill pill-draw-full">
-                            <div class="pill-pts">2 pts</div>
-                            <div class="pill-desc">Acertás empate <strong>y</strong> quién clasifica en penales</div>
+                            <div class="pill-pts">3 pts</div>
+                            <div class="pill-desc">Acertás empate en 90' <strong>y</strong> quién clasifica en TE + Penales</div>
                         </div>
                         <div class="rules-pill pill-draw-half">
-                            <div class="pill-pts">1 pt</div>
-                            <div class="pill-desc">Acertás empate pero fallás los penales</div>
+                            <div class="pill-pts">2 pts</div>
+                            <div class="pill-desc">Acertás empate en 90' pero fallás quién clasifica en TE + Penales</div>
                         </div>
                         <div class="rules-pill pill-miss">
                             <div class="pill-pts">0 pts</div>
-                            <div class="pill-desc">Fallás el resultado</div>
+                            <div class="pill-desc">Fallás el resultado de los 90' reglamentarios</div>
                         </div>
                     </div>
                     <div class="rules-table-wrap">
                         <table class="rules-table">
                             <thead>
                                 <tr>
-                                    <th>Tu apuesta</th>
-                                    <th>Tu clasifica</th>
-                                    <th>Resultado real</th>
+                                    <th>Tu apuesta 90'</th>
+                                    <th>Tu clasifica (TE+P)</th>
+                                    <th>Resultado real 90'</th>
                                     <th>Clasifica real</th>
                                     <th>Pts</th>
                                 </tr>
@@ -87,32 +92,32 @@
                                 <tr>
                                     <td>Gana Local</td><td class="cell-muted">—</td>
                                     <td>Gana Local</td><td class="cell-muted">—</td>
-                                    <td class="cell-pts pts-4">2</td>
+                                    <td class="cell-pts pts-4">4</td>
                                 </tr>
                                 <tr>
                                     <td>Gana Visita</td><td class="cell-muted">—</td>
                                     <td>Gana Visita</td><td class="cell-muted">—</td>
-                                    <td class="cell-pts pts-4">2</td>
+                                    <td class="cell-pts pts-4">4</td>
                                 </tr>
                                 <tr>
                                     <td>Empate</td><td>Local</td>
-                                    <td>Empate</td><td>Local</td>
-                                    <td class="cell-pts pts-3">2</td>
+                                    <td>Empate (va a TE+P)</td><td>Local clasifica</td>
+                                    <td class="cell-pts pts-3">3</td>
                                 </tr>
                                 <tr>
                                     <td>Empate</td><td>Visita</td>
-                                    <td>Empate</td><td>Visita</td>
-                                    <td class="cell-pts pts-3">2</td>
+                                    <td>Empate (va a TE+P)</td><td>Visita clasifica</td>
+                                    <td class="cell-pts pts-3">3</td>
                                 </tr>
                                 <tr>
                                     <td>Empate</td><td>Local</td>
-                                    <td>Empate</td><td>Visita</td>
-                                    <td class="cell-pts pts-2">1</td>
+                                    <td>Empate (va a TE+P)</td><td>Visita clasifica</td>
+                                    <td class="cell-pts pts-2">2</td>
                                 </tr>
                                 <tr>
                                     <td>Empate</td><td>Visita</td>
-                                    <td>Empate</td><td>Local</td>
-                                    <td class="cell-pts pts-2">1</td>
+                                    <td>Empate (va a TE+P)</td><td>Local clasifica</td>
+                                    <td class="cell-pts pts-2">2</td>
                                 </tr>
                                 <tr class="row-miss">
                                     <td>Cualquiera</td><td class="cell-muted">—</td>
@@ -122,8 +127,13 @@
                             </tbody>
                         </table>
                     </div>
-                    <p class="rules-note">Victoria y empate con penales acertados valen igual (2 pts). El punto del empate compensa que tenés que adivinar también los penales.</p>
+                    <p class="rules-note">
+                        Si un equipo gana en los 90' no hay pregunta de TE + Penales: clasifica directamente y vale 4 pts.
+                        La pregunta de <em>quién clasifica</em> solo aparece cuando apostás empate, porque el partido iría a tiempo extra y penales.
+                    </p>
                 </div>
+
+
             </div>
 
             <div id="fixture-container" class="cards-grid"></div>

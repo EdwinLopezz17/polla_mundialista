@@ -74,16 +74,18 @@ export function renderLeaderboard(ranking, partidos) {
         '<th class="col-center col-md">Total</th>',
     ].join('');
 
+    let pos = 1;
     const rows = ranking.map(({ nombre, puntajeBase, porPartido, total }, i) => {
+        if (i > 0 && ranking[i].total < ranking[i - 1].total) pos++;
         const celdas = partidosConResultado.map(p => {
             const pts = porPartido[p.id] ?? 0;
-            const cls = pts === 2 ? 'pts-cell-win' : pts === 1 ? 'pts-cell-draw' : 'pts-cell-miss';
+            const cls = pts >= 3 ? 'pts-cell-win' : pts === 2 ? 'pts-cell-draw' : 'pts-cell-miss';
             return `<td class="col-center ${cls}">${pts > 0 ? pts : '—'}</td>`;
         }).join('');
 
         return `
             <tr>
-                <td><span class="rank-pos ${rankClass(i)}">#${i + 1}</span></td>
+                <td><span class="rank-pos ${rankClass(pos - 1)}">#${pos}</span></td>
                 <td class="rank-name">${nombre}</td>
                 <td class="col-center rank-base">${puntajeBase}</td>
                 ${celdas}

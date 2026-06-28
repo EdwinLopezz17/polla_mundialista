@@ -1,9 +1,9 @@
 export function calcularPuntosPartido(apuesta, oficial) {
     if (!apuesta || apuesta.resultado90 !== oficial.res90) return 0;
     if (oficial.res90 === 'X') {
-        return apuesta.clasifica === oficial.clasifica ? 2 : 1;
+        return apuesta.clasifica === oficial.clasifica ? 3 : 2;
     }
-    return 2;
+    return 4;
 }
 
 export function buildRealDataMap(partidos) {

@@ -34,7 +34,7 @@
         </div>
         <div class="nav-links">
             <button class="nav-btn active" data-target="screen-apostar">Apostar</button>
-            <button class="nav-btn" data-target="screen-mis-apuestas">Mis Apuestas</button>
+            <button class="nav-btn" data-target="screen-mis-apuestas">Mis Votos</button>
             <button class="nav-btn" data-target="screen-posiciones">Tabla</button>
         </div>
     </nav>
@@ -53,11 +53,11 @@
                     <button class="rules-toggle" id="rules-toggle" aria-expanded="false">Ver reglas</button>
                 </div>
                 <div class="rules-body" id="rules-body">
-                    <p class="rules-intro">Cada partido tiene dos preguntas: el resultado a 90 minutos + tiempo extra y, si apostás empate, quién clasifica en penales.</p>
+                    <p class="rules-intro">Cada partido tiene dos preguntas: el resultado y, si hay empate, quién clasifica en penales.</p>
                     <div class="rules-pills">
                         <div class="rules-pill pill-win">
                             <div class="pill-pts">2 pts</div>
-                            <div class="pill-desc">Acertás que gana un equipo en 90' + tiempo extra</div>
+                            <div class="pill-desc">Acertás que gana un equipo</div>
                         </div>
                         <div class="rules-pill pill-draw-full">
                             <div class="pill-pts">2 pts</div>
@@ -65,18 +65,18 @@
                         </div>
                         <div class="rules-pill pill-draw-half">
                             <div class="pill-pts">1 pt</div>
-                            <div class="pill-desc">Acertás empate pero fallás quién clasifica</div>
+                            <div class="pill-desc">Acertás empate pero fallás los penales</div>
                         </div>
                         <div class="rules-pill pill-miss">
                             <div class="pill-pts">0 pts</div>
-                            <div class="pill-desc">Fallás el resultado de 90' + tiempo extra</div>
+                            <div class="pill-desc">Fallás el resultado</div>
                         </div>
                     </div>
                     <div class="rules-table-wrap">
                         <table class="rules-table">
                             <thead>
                                 <tr>
-                                    <th>Tu apuesta 90' + TE</th>
+                                    <th>Tu apuesta</th>
                                     <th>Tu clasifica</th>
                                     <th>Resultado real</th>
                                     <th>Clasifica real</th>
@@ -85,58 +85,44 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Gana Local</td>
-                                    <td class="cell-muted">—</td>
-                                    <td>Gana Local</td>
-                                    <td class="cell-muted">—</td>
-                                    <td class="cell-pts pts-2">2</td>
+                                    <td>Gana Local</td><td class="cell-muted">—</td>
+                                    <td>Gana Local</td><td class="cell-muted">—</td>
+                                    <td class="cell-pts pts-4">2</td>
                                 </tr>
                                 <tr>
-                                    <td>Gana Visita</td>
-                                    <td class="cell-muted">—</td>
-                                    <td>Gana Visita</td>
-                                    <td class="cell-muted">—</td>
-                                    <td class="cell-pts pts-2">2</td>
+                                    <td>Gana Visita</td><td class="cell-muted">—</td>
+                                    <td>Gana Visita</td><td class="cell-muted">—</td>
+                                    <td class="cell-pts pts-4">2</td>
                                 </tr>
                                 <tr>
-                                    <td>Empate (X)</td>
-                                    <td>Local</td>
-                                    <td>Empate (X)</td>
-                                    <td>Local</td>
-                                    <td class="cell-pts pts-2">2</td>
+                                    <td>Empate</td><td>Local</td>
+                                    <td>Empate</td><td>Local</td>
+                                    <td class="cell-pts pts-3">2</td>
                                 </tr>
                                 <tr>
-                                    <td>Empate (X)</td>
-                                    <td>Visita</td>
-                                    <td>Empate (X)</td>
-                                    <td>Visita</td>
-                                    <td class="cell-pts pts-2">2</td>
+                                    <td>Empate</td><td>Visita</td>
+                                    <td>Empate</td><td>Visita</td>
+                                    <td class="cell-pts pts-3">2</td>
                                 </tr>
                                 <tr>
-                                    <td>Empate (X)</td>
-                                    <td>Local</td>
-                                    <td>Empate (X)</td>
-                                    <td>Visita</td>
-                                    <td class="cell-pts pts-1">1</td>
+                                    <td>Empate</td><td>Local</td>
+                                    <td>Empate</td><td>Visita</td>
+                                    <td class="cell-pts pts-2">1</td>
                                 </tr>
                                 <tr>
-                                    <td>Empate (X)</td>
-                                    <td>Visita</td>
-                                    <td>Empate (X)</td>
-                                    <td>Local</td>
-                                    <td class="cell-pts pts-1">1</td>
+                                    <td>Empate</td><td>Visita</td>
+                                    <td>Empate</td><td>Local</td>
+                                    <td class="cell-pts pts-2">1</td>
                                 </tr>
                                 <tr class="row-miss">
-                                    <td>Cualquiera</td>
-                                    <td class="cell-muted">—</td>
-                                    <td>Distinto</td>
-                                    <td class="cell-muted">—</td>
+                                    <td>Cualquiera</td><td class="cell-muted">—</td>
+                                    <td>Distinto</td><td class="cell-muted">—</td>
                                     <td class="cell-pts pts-0">0</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <p class="rules-note">Acertar el resultado vale siempre 2 pts, ya sea ganador directo o empate con penales correctos. Si acertás empate pero fallás quién clasifica, obtenés 1 pt.</p>
+                    <p class="rules-note">Victoria y empate con penales acertados valen igual (2 pts). El punto del empate compensa que tenés que adivinar también los penales.</p>
                 </div>
             </div>
 
@@ -148,13 +134,13 @@
                 <h2 class="section-title">Mis apuestas</h2>
                 <p class="section-desc">Pronósticos guardados en la base de datos.</p>
             </div>
-            <div class="table-wrap">
+            <div class="table-responsive">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Partido</th>
-                            <th>Pronóstico 90' + TE</th>
-                            <th>Clasifica</th>
+                            <th>Partido / Fase</th>
+                            <th class="col-center col-md">Pronóstico</th>
+                            <th class="col-center col-lg">Clasifica</th>
                         </tr>
                     </thead>
                     <tbody id="my-bets-table-body"></tbody>
@@ -165,33 +151,13 @@
         <div id="screen-posiciones" class="sub-screen hidden">
             <div class="section-header">
                 <h2 class="section-title">Tabla de posiciones</h2>
-                <p class="section-desc">Calculada en tiempo real con resultados oficiales.</p>
+                <p class="section-desc">Puntaje base + puntos por cada partido resuelto.</p>
             </div>
-            <div class="table-wrap">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Participante</th>
-                            <th>Puntos</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-body"></tbody>
-                </table>
-            </div>
+            <div id="leaderboard-wrap"></div>
         </div>
 
     </div>
 
-    <script type="module" src="script.js"></script>
-    <script>
-        document.getElementById("rules-toggle").addEventListener("click", function () {
-            const body = document.getElementById("rules-body");
-            const open = this.getAttribute("aria-expanded") === "true";
-            this.setAttribute("aria-expanded", String(!open));
-            this.textContent = open ? "Ver reglas" : "Ocultar";
-            body.classList.toggle("open", !open);
-        });
-    </script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -232,30 +232,30 @@ async function loadMisApuestas() {
 
         let html = '';
 
-        if (resueltos.length) {
-            const rowsResueltos = resueltos.map(p => buildRow(p, misVotos[p.id], true)).join('');
-            html += `
-                <div class="bets-section-label">
-                    <span class="bets-section-icon">✓</span> Partidos resueltos
-                </div>
-                <div class="table-responsive" style="margin-bottom: 24px;">
-                    <table class="data-table">
-                        ${colHeaders}
-                        <tbody>${rowsResueltos}</tbody>
-                    </table>
-                </div>`;
-        }
-
         if (pendientes.length) {
             const rowsPendientes = pendientes.map(p => buildRow(p, misVotos[p.id], false)).join('');
             html += `
                 <div class="bets-section-label bets-section-pending">
                     <span class="bets-section-icon">◷</span> Partidos pendientes
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="margin-bottom: 16px;">
                     <table class="data-table">
                         ${colHeaders}
                         <tbody>${rowsPendientes}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        if (resueltos.length) {
+            const rowsResueltos = resueltos.map(p => buildRow(p, misVotos[p.id], true)).join('');
+            html += `
+                <div class="bets-section-label">
+                    <span class="bets-section-icon">✓</span> Partidos resueltos
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        ${colHeaders}
+                        <tbody>${rowsResueltos}</tbody>
                     </table>
                 </div>`;
         }
@@ -301,7 +301,7 @@ async function loadTabla() {
 
         const apuestasWrap = document.createElement('div');
         apuestasWrap.innerHTML = `
-            <div class="section-header" style="margin-top: 32px;">
+            <div class="section-header" style="margin-top: 22px;">
                 <h3 class="section-title" style="font-size:17px;">Apuestas de partidos cerrados</h3>
                 <p class="section-desc">Solo visibles una vez cerrada la hora de apuesta.</p>
             </div>

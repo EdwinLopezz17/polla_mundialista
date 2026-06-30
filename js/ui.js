@@ -62,16 +62,17 @@ export function renderMatchCard(partido, votosPrevios) {
 }
 
 export function renderLeaderboard(ranking, partidos) {
-    const partidosConResultado = partidos.filter(p => p.resultado90_real);
+    // Mostrar primero los partidos resueltos más recientes (orden invertido)
+    const partidosConResultado = partidos.filter(p => p.resultado90_real).slice().reverse();
 
     const headers = [
         '<th style="width:44px">Pos</th>',
         '<th style="text-align:left">Participante</th>',
-        '<th class="col-pts" title="Puntaje base">Base</th>',
+        '<th style="width:64px">Total</th>',
         ...partidosConResultado.map(p =>
             `<th class="col-pts" title="${p.local} vs ${p.visitante}">${p.local.substring(0,3).toUpperCase()}<br>vs<br>${p.visitante.substring(0,3).toUpperCase()}</th>`
         ),
-        '<th style="width:64px">Total</th>',
+        '<th class="col-pts" title="Puntaje base">Base</th>',
     ].join('');
 
     let pos = 1;
@@ -88,9 +89,9 @@ export function renderLeaderboard(ranking, partidos) {
             <tr>
                 <td><span class="lb-pos ${medal}">${pos}</span></td>
                 <td><span class="lb-name">${nombre}</span></td>
-                <td class="lb-base">${puntajeBase}</td>
-                ${celdas}
                 <td class="lb-total">${total}</td>
+                ${celdas}
+                <td class="lb-base">${puntajeBase}</td>
             </tr>`;
     }).join('');
 
@@ -104,6 +105,9 @@ export function renderApuestasVisibles(usuarios, partidos, apuestas) {
     );
 
     if (!cerrados.length) return '<p class="state-empty">Aún no cerró ningún partido.</p>';
+
+    // Mostrar primero los partidos cerrados más recientes
+    cerrados.reverse();
 
     const apuestaMap = Object.fromEntries(apuestas.map(a => [a.id, a.pronosticos ?? {}]));
 
@@ -140,7 +144,7 @@ export function renderApuestasVisibles(usuarios, partidos, apuestas) {
 
     return `
         <div class="table-responsive leaderboard-scroll">
-            <table class="data-table bets-table leaderboard-table">
+            <table class="data-table bets-table">
                 <thead><tr>${headers}</tr></thead>
                 <tbody>${rows}</tbody>
             </table>

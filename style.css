@@ -785,6 +785,8 @@ select:focus, input[type="password"]:focus {
 
 /* ── Apuestas cerradas compact (bets-table) ── */
 .bets-table {
+    width: auto;
+    min-width: 0;
     font-size: 12px;
     border-collapse: collapse;
 }

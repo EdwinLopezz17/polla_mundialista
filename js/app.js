@@ -123,10 +123,27 @@ function bindCardEvents() {
         };
     });
 
+    // 1. Busca esta sección dentro de la función bindCardEvents()
     container.querySelectorAll('.btn-guardar-individual').forEach(btn => {
         btn.onclick = async function () {
             const card    = this.closest('.match-card');
             const matchId = card.dataset.matchId;
+
+            const partidoInfo = cachedPartidos.find(p => p.id === matchId);
+            if (partidoInfo) {
+                const ahora = new Date();
+                const limiteCorte = new Date(new Date(partidoInfo.fechaHora).getTime() - CUTOFF_MINUTES * 60 * 1000);
+                
+                if (ahora >= limiteCorte) {
+                    alert('Lo sentimos, el tiempo para apostar en este partido ha expirado. La apuesta no será guardada.');
+                    card.remove();
+                    if (container.children.length === 0) {
+                        container.innerHTML = `<p class="state-empty">No hay partidos disponibles para apostar en este momento.</p>`;
+                    }
+                    return;
+                }
+            }
+
             const btn90   = card.querySelector('.btn-opt[data-type="90min"].selected');
             if (!btn90) return alert('Selecciona tu pronóstico.');
 

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Partidos Pendientes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b132b;
+            color: #ffffff;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        h2 {
+            font-size: 26px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #f59e0b; /* Color ámbar/alerta para pendientes */
+        }
+        p {
+            color: #94a3b8;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            background-color: #111a36;
+            border: 1px solid #1e294b;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 12px;
+        }
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #1e294b;
+            border-right: 1px solid #1e294b;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #131f42;
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+        th.participante, td.participante {
+            text-align: left;
+            padding-left: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            background-color: #111a36;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+            border-right: 2px solid #f59e0b;
+        }
+        th.participante {
+            background-color: #131f42;
+            z-index: 11;
+        }
+        .apuesta-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+            display: inline-block;
+            min-width: 70px;
+            text-align: center;
+        }
+        .badge.local { background-color: #1e3a8a; color: #93c5fd; }
+        .badge.visitante { background-color: #064e3b; color: #6ee7b7; }
+        .badge.empate { background-color: #334155; color: #cbd5e1; }
+        .badge.info-sub { background-color: #1e293b; color: #94a3b8; font-size: 9px; min-width: auto; padding: 2px 5px; }
+
+        .no-apuesta {
+            color: #475569;
+            font-style: italic;
+        }
+        .loading {
+            padding: 40px;
+            font-style: italic;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Panel de Soporte: Apuestas de Partidos Pendientes</h2>
+        <p>Filtrado activo: Solo se muestran los encuentros que aún no han comenzado o están por jugarse.</p>
+
+        <div class="table-responsive">
+            <table>
+                <thead id="tabla-header">
+                    <tr>
+                        <th class="participante">Participante</th>
+                        <th class="loading">Buscando partidos pendientes...</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-cuerpo">
+                    <tr>
+                        <td colspan="100" class="loading">Cargando base de datos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEtoklMJRM4q8JDc2RJSGDDDXdTBI3-Qs",
+            authDomain: "pollafutbolera-cd2e5.firebaseapp.com",
+            projectId: "pollafutbolera-cd2e5",
+            storageBucket: "pollafutbolera-cd2e5.firebasestorage.app",
+            messagingSenderId: "770223946672",
+            appId: "1:770223946672:web:2e6e57a229977abdcaf475"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function inicializarPanelPendientes() {
+            try {
+                const ahora = new Date(); // Fecha y hora actual del sistema
+                
+                // 1. Descargar partidos y filtrar SOLAMENTE los futuros/pendientes
+                const partidosSnapshot = await getDocs(collection(db, "partidos"));
+                const listaPartidosPendientes = [];
+                
+                partidosSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Validar campo fechaHora (asume formato ISO o String compatible)
+                    if (data.fechaHora) {
+                        const fechaPartido = new Date(data.fechaHora);
+                        
+                        // Si la fecha del partido es mayor o igual a "ahora", está pendiente
+                        if (fechaPartido >= ahora) {
+                            listaPartidosPendientes.push({
+                                id: doc.id,
+                                local: data.local || "Local",
+                                visitante: data.visitante || "Visitante",
+                                fase: data.fase || "",
+                                fechaTexto: data.fechaHora.split('T')[0] // Extrae solo YYYY-MM-DD para soporte
+                            });
+                        }
+                    }
+                });
+
+                const cuerpoTabla = document.getElementById("tabla-cuerpo");
+
+                // Si no hay partidos pendientes, avisar y detener proceso
+                if (listaPartidosPendientes.length === 0) {
+                    document.getElementById("tabla-header").innerHTML = `<tr><th class="participante">Participante</th><th>Estado</th></tr>`;
+                    cuerpoTabla.innerHTML = `<tr><td colspan="2" class="loading"> No hay partidos pendientes por jugar en este momento.</td></tr>`;
+                    return;
+                }
+
+                // Generar columnas de la cabecera únicamente con los partidos filtrados
+                const headerRow = document.getElementById("tabla-header");
+                let headerHtml = `<th class="participante">Participante</th>`;
+                listaPartidosPendientes.forEach(p => {
+                    headerHtml += `<th>
+                        <span style="color:#f59e0b; font-size:9px;">${p.fase}</span><br>
+                        ${p.local}<br><span style="color:#64748b;font-weight:normal;">vs</span><br>${p.visitante}<br>
+                        <span style="color:#94a3b8; font-size:9px; font-weight:normal;">${p.fechaTexto}</span>
+                    </th>`;
+                });
+                headerRow.innerHTML = headerHtml;
+
+                // 2. Descargar las apuestas
+                const apuestasSnapshot = await getDocs(collection(db, "apuestas"));
+                let cuerpoHtml = "";
+
+                if (apuestasSnapshot.empty) {
+                    cuerpoTabla.innerHTML = `<tr><td colspan="${listaPartidosPendientes.length + 1}" class="loading">No hay apuestas en el sistema.</td></tr>`;
+                    return;
+                }
+
+                // 3. Procesar apuestas por cada participante mapeando contra las columnas pendientes
+                for (const docApuesta of apuestasSnapshot.docs) {
+                    const usuarioId = docApuesta.id;
+                    const datosApuesta = docApuesta.data();
+                    const pronosticos = datosApuesta.pronosticos || {};
+
+                    // Conseguir nombre limpio del usuario
+                    let nombreAMostrar = usuarioId;
+                    try {
+                        const userDoc = await getDoc(doc(db, "usuarios", usuarioId));
+                        if (userDoc.exists() && userDoc.data().nombre) {
+                            nombreAMostrar = userDoc.data().nombre;
+                        }
+                    } catch (e) {
+                        console.error("Error trayendo usuario: " + usuarioId, e);
+                    }
+
+                    cuerpoHtml += `<tr><td class="participante">${nombreAMostrar}</td>`;
+
+                    // Iterar solo sobre los partidos pendientes
+                    listaPartidosPendientes.forEach(partido => {
+                        const apuestaJugador = pronosticos[partido.id];
+
+                        if (apuestaJugador) {
+                            const res90 = apuestaJugador.resultado90;
+                            const clasif = apuestaJugador.clasifica;
+
+                            cuerpoHtml += `<td><div class="apuesta-container">`;
+
+                            if (res90 === "1") {
+                                cuerpoHtml += `<span class="badge local">${partido.local}</span>`;
+                            } else if (res90 === "2") {
+                                cuerpoHtml += `<span class="badge visitante">${partido.visitante}</span>`;
+                            } else if (res90 === "X" || res90 === "Empate" || res90 === "Emp" || res90 === "0") {
+                                cuerpoHtml += `<span class="badge empate">Empate</span>`;
+                            } else if (res90) {
+                                cuerpoHtml += `<span class="badge empate">${res90}</span>`;
+                            }
+
+                            if (clasif) {
+                                let quienClasifica = clasif;
+                                if (clasif === "1") quienClasifica = partido.local;
+                                if (clasif === "2") quienClasifica = partido.visitante;
+                                cuerpoHtml += `<span class="badge info-sub">Pasa: ${quienClasifica}</span>`;
+                            }
+
+                            cuerpoHtml += `</div></td>`;
+                        } else {
+                            cuerpoHtml += `<td><span class="no-apuesta">— Sin apuesta —</span></td>`;
+                        }
+                    });
+
+                    cuerpoHtml += `</tr>`;
+                }
+
+                cuerpoTabla.innerHTML = cuerpoHtml;
+
+            } catch (error) {
+                console.error("Error cargando panel filtrado:", error);
+                document.getElementById("tabla-cuerpo").innerHTML = `<tr><td colspan="100" class="loading" style="color:#f87171;">Error al procesar el filtro de partidos.</td></tr>`;
+            }
+        }
+
+        inicializarPanelPendientes();
+    </script>
+</body>
+</html>

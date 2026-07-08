@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polla · Clasificación</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">POLLA</div>
+    <nav class="app-nav">
+      <a href="apuestas.html">Apostar</a>
+      <a href="mis-apuestas.html">Mis apuestas</a>
+      <a href="clasifica.html" class="active">Clasificación</a>
+    </nav>
+    <div class="header-user">
+      <span class="name" id="userName"></span>
+      <button id="btnLogout">Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>Tabla de posiciones</h1>
+    <div id="msg" class="msg" hidden></div>
+    <div class="panel table-scroll">
+      <table id="scoreTable">
+        <thead>
+          <tr id="headerRow"></tr>
+        </thead>
+        <tbody id="bodyRows"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/clasifica.js"></script>
+</body>
+</html>

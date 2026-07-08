@@ -1,162 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polla Pro — Eliminatorias</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polla · Ingresar</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <div class="login-wrap">
+    <form class="login-card panel" id="loginForm" autocomplete="off">
+      <h1>Polla de pronósticos</h1>
 
-    <div id="login-screen" class="screen active">
-        <div class="auth-card">
-            <div class="auth-logo">PE</div>
-            <h1>Polla Eliminatorias</h1>
-            <p>Selecciona tu usuario e ingresa tu PIN</p>
-            <div class="form-group">
-                <label for="player-select">Participante</label>
-                <select id="player-select">
-                    <option value="">Selecciona tu nombre</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="player-pin">PIN Secreto</label>
-                <input type="password" id="player-pin" placeholder="4 dígitos" maxlength="4">
-            </div>
-            <button id="btn-login" class="btn-primary">Ingresar</button>
-        </div>
-    </div>
+      <div id="msg" class="msg" hidden></div>
 
-    <nav id="main-nav" class="navbar hidden">
-        <div class="nav-brand">
-            <span class="nav-logo">PE</span>
-            <span id="nav-username" class="nav-user">Usuario</span>
-        </div>
-        <div class="nav-links">
-            <button class="nav-btn active" data-target="screen-apostar">Apostar</button>
-            <button class="nav-btn" data-target="screen-mis-apuestas">Mis Votos</button>
-            <button class="nav-btn" data-target="screen-posiciones">Tabla</button>
-        </div>
-    </nav>
+      <div class="field">
+        <label for="userSelect">Usuario</label>
+        <select id="userSelect" required>
+          <option value="">Cargando usuarios…</option>
+        </select>
+      </div>
 
-    <div class="container main-content hidden" id="main-container">
+      <div class="field">
+        <label for="pinInput">PIN</label>
+        <input type="password" id="pinInput" inputmode="numeric" required>
+      </div>
 
-        <div id="screen-apostar" class="sub-screen active">
-            <div class="section-header">
-                <h2 class="section-title">Partidos disponibles</h2>
-                <p class="section-desc">Las apuestas se cierran 15 minutos antes del inicio.</p>
-            </div>
+      <button type="submit" class="primary" id="btnLogin">Ingresar</button>
+    </form>
+  </div>
 
-            <div class="rules-block">
-                <div class="rules-header">
-                    <span class="rules-label">Cómo se puntúa</span>
-                    <button class="rules-toggle" id="rules-toggle" aria-expanded="false">Ver reglas</button>
-                </div>
-                
-                <div class="rules-body" id="rules-body">
-                    <p class="rules-intro">
-                        <strong>90'</strong> se refiere únicamente a los 90 minutos reglamentarios.
-                        Si el partido termina en empate y va a tiempo extra y penales, eso se apuesta
-                        en la opción <strong>TE + Penales</strong>, que es una pregunta separada.
-                    </p>
-                    <div class="rules-pills">
-                        <div class="rules-pill pill-win">
-                            <div class="pill-pts">4 pts</div>
-                            <div class="pill-desc">Acertás que gana un equipo en los 90' reglamentarios</div>
-                        </div>
-                        <div class="rules-pill pill-draw-full">
-                            <div class="pill-pts">3 pts</div>
-                            <div class="pill-desc">Acertás empate en 90' <strong>y</strong> quién clasifica en TE + Penales</div>
-                        </div>
-                        <div class="rules-pill pill-draw-half">
-                            <div class="pill-pts">2 pts</div>
-                            <div class="pill-desc">Acertás empate en 90' pero fallás quién clasifica en TE + Penales</div>
-                        </div>
-                        <div class="rules-pill pill-miss">
-                            <div class="pill-pts">0 pts</div>
-                            <div class="pill-desc">Fallás el resultado de los 90' reglamentarios</div>
-                        </div>
-                    </div>
-                    <div class="rules-table-wrap">
-                        <table class="rules-table">
-                            <thead>
-                                <tr>
-                                    <th>Tu apuesta 90'</th>
-                                    <th>Tu clasifica (TE+P)</th>
-                                    <th>Resultado real 90'</th>
-                                    <th>Clasifica real</th>
-                                    <th>Pts</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Gana Local</td><td class="cell-muted">—</td>
-                                    <td>Gana Local</td><td class="cell-muted">—</td>
-                                    <td class="cell-pts pts-4">4</td>
-                                </tr>
-                                <tr>
-                                    <td>Gana Visita</td><td class="cell-muted">—</td>
-                                    <td>Gana Visita</td><td class="cell-muted">—</td>
-                                    <td class="cell-pts pts-4">4</td>
-                                </tr>
-                                <tr>
-                                    <td>Empate</td><td>Local</td>
-                                    <td>Empate (va a TE+P)</td><td>Local clasifica</td>
-                                    <td class="cell-pts pts-3">3</td>
-                                </tr>
-                                <tr>
-                                    <td>Empate</td><td>Visita</td>
-                                    <td>Empate (va a TE+P)</td><td>Visita clasifica</td>
-                                    <td class="cell-pts pts-3">3</td>
-                                </tr>
-                                <tr>
-                                    <td>Empate</td><td>Local</td>
-                                    <td>Empate (va a TE+P)</td><td>Visita clasifica</td>
-                                    <td class="cell-pts pts-2">2</td>
-                                </tr>
-                                <tr>
-                                    <td>Empate</td><td>Visita</td>
-                                    <td>Empate (va a TE+P)</td><td>Local clasifica</td>
-                                    <td class="cell-pts pts-2">2</td>
-                                </tr>
-                                <tr class="row-miss">
-                                    <td>Cualquiera</td><td class="cell-muted">—</td>
-                                    <td>Distinto</td><td class="cell-muted">—</td>
-                                    <td class="cell-pts pts-0">0</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="rules-note">
-                        Si un equipo gana en los 90' no hay pregunta de TE + Penales: clasifica directamente y vale 4 pts.
-                        La pregunta de <em>quién clasifica</em> solo aparece cuando apostás empate, porque el partido iría a tiempo extra y penales.
-                    </p>
-                </div>
-
-
-            </div>
-
-            <div id="fixture-container" class="cards-grid"></div>
-        </div>
-
-        <div id="screen-mis-apuestas" class="sub-screen hidden">
-            <div class="section-header">
-                <h2 class="section-title">Mis apuestas</h2>
-                <p class="section-desc">Pronósticos guardados en la base de datos.</p>
-            </div>
-            <div id="mis-apuestas-wrap"></div>
-        </div>
-
-        <div id="screen-posiciones" class="sub-screen hidden">
-            <div class="section-header">
-                <h2 class="section-title">Tabla de posiciones</h2>
-                <p class="section-desc">Puntaje base + puntos por cada partido resuelto.</p>
-            </div>
-            <div id="leaderboard-wrap"></div>
-        </div>
-
-    </div>
-
-    <script type="module" src="js/app.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/login.js"></script>
 </body>
 </html>

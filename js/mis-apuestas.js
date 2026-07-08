@@ -18,6 +18,7 @@
 
     const resultHit =
       bet.fullTimePrediction.toUpperCase() === (match.fullTimeResult || "").toUpperCase();
+    const resultPoints = isDraw ? 2 : 4;
 
     const qualifiedApplies = isDraw;
     const qualifiedHit =
@@ -32,7 +33,16 @@
     const yellowHit = bet.yellowCardPrediction === match.yellowCard;
     const redHit = bet.redCardPrediction === match.redCard;
 
-    return { resultHit, qualifiedApplies, qualifiedHit, scoreHit, penaltyHit, yellowHit, redHit };
+    return {
+      resultHit,
+      resultPoints,
+      qualifiedApplies,
+      qualifiedHit,
+      scoreHit,
+      penaltyHit,
+      yellowHit,
+      redHit
+    };
   }
 
   function renderPending(bet, match) {
@@ -46,6 +56,7 @@
       <div class="bet-details">
         <span>Fecha: ${UI.formatDateTime(match.matchDate)}</span>
         <span>Tu resultado: ${UI.resultLabel(bet.fullTimePrediction, match.homeTeam, match.awayTeam)}</span>
+        ${bet.fullTimePrediction.toUpperCase() === "X" ? `<span>Clasifica: ${UI.teamLabel(bet.qualifiedTeamPrediction, match.homeTeam, match.awayTeam)}</span>` : ""}
         <span>Marcador: ${bet.homeGoalsPrediction} - ${bet.awayGoalsPrediction}</span>
         <span>Penal: ${UI.boolLabel(bet.penaltyPrediction)}</span>
         <span>Amarilla: ${UI.boolLabel(bet.yellowCardPrediction)}</span>
@@ -66,16 +77,18 @@
       </div>
       <div class="bet-details">
         <span>Fecha: ${UI.formatDateTime(match.matchDate)}</span>
+        <span>Tu resultado: ${UI.resultLabel(bet.fullTimePrediction, match.homeTeam, match.awayTeam)}</span>
+        ${bet.fullTimePrediction.toUpperCase() === "X" ? `<span>Elegiste que clasifica: ${UI.teamLabel(bet.qualifiedTeamPrediction, match.homeTeam, match.awayTeam)}</span>` : ""}
         <span>Resultado real: ${UI.resultLabel(match.fullTimeResult, match.homeTeam, match.awayTeam)} (${match.homeGoals}-${match.awayGoals})</span>
         <span class="points-total">Puntos: ${bet.pointsEarned}</span>
       </div>
       <div class="hits">
-        ${UI.hitBadge(hits.resultHit, "Resultado")}
-        ${hits.qualifiedApplies ? UI.hitBadge(hits.qualifiedHit, "Clasificado") : `<span class="hit">— Clasificado (no aplicó)</span>`}
-        ${UI.hitBadge(hits.scoreHit, "Marcador exacto")}
-        ${UI.hitBadge(hits.penaltyHit, "Penal")}
-        ${UI.hitBadge(hits.yellowHit, "Amarilla")}
-        ${UI.hitBadge(hits.redHit, "Roja")}
+        ${UI.hitBadge(hits.resultHit, "Resultado", hits.resultPoints)}
+        ${hits.qualifiedApplies ? UI.hitBadge(hits.qualifiedHit, "Clasificado", 1) : `<span class="hit">— Clasificado (no aplicó)</span>`}
+        ${UI.hitBadge(hits.scoreHit, "Marcador exacto", 3)}
+        ${UI.hitBadge(hits.penaltyHit, "Penal", 1)}
+        ${UI.hitBadge(hits.yellowHit, "Amarilla", 1)}
+        ${UI.hitBadge(hits.redHit, "Roja", 1)}
       </div>
     `;
     return row;

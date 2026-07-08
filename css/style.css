@@ -351,16 +351,42 @@ tbody tr:hover {
   overflow-y: auto;
 }
 
-.table-scroll table thead th:first-child,
-.table-scroll table tbody td:first-child,
-.table-scroll table tbody th:first-child {
+.col-name {
+  min-width: 130px;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.col-total {
+  min-width: 56px;
+  max-width: 56px;
+}
+
+.table-scroll table thead th.col-name,
+.table-scroll table tbody td.col-name,
+.table-scroll table tbody th.col-name {
   position: sticky;
   left: 0;
   background: var(--panel);
   z-index: 1;
 }
 
-.table-scroll table thead th:first-child {
+.table-scroll table thead th.col-name {
+  background: var(--header-bg);
+  z-index: 2;
+}
+
+.table-scroll table thead th.col-total,
+.table-scroll table tbody td.col-total {
+  position: sticky;
+  left: 130px; /* ancho de .col-name */
+  background: var(--panel);
+  z-index: 1;
+  border-left: 1px solid var(--border);
+}
+
+.table-scroll table thead th.col-total {
   background: var(--header-bg);
   z-index: 2;
 }

@@ -51,11 +51,20 @@ const UI = (() => {
     return "-";
   }
 
-  // Marca de acierto en escala de grises (sin colores, solo peso/opacidad)
-  function hitBadge(isHit, label) {
+  // Dado "1"/"2", devuelve el nombre del equipo (para mostrar a quién eligió como clasificado)
+  function teamLabel(code, homeTeam, awayTeam) {
+    if (code === "1") return homeTeam;
+    if (code === "2") return awayTeam;
+    return "-";
+  }
+
+  // Marca de acierto en escala de grises (sin colores, solo peso/opacidad).
+  // Si acertó y se le pasan los puntos que valía esa categoría, los muestra: "✓ Resultado (+4)"
+  function hitBadge(isHit, label, points) {
     const cls = isHit ? "hit hit-yes" : "hit hit-no";
     const symbol = isHit ? "✓" : "✗";
-    return `<span class="${cls}" title="${label}">${symbol} ${label}</span>`;
+    const suffix = isHit && points ? ` (+${points})` : "";
+    return `<span class="${cls}" title="${label}">${symbol} ${label}${suffix}</span>`;
   }
 
   function bindLogout(buttonId = "btnLogout") {
@@ -76,6 +85,7 @@ const UI = (() => {
     shortCode,
     boolLabel,
     resultLabel,
+    teamLabel,
     hitBadge,
     bindLogout,
     paintUserBadge

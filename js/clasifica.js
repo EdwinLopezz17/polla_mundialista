@@ -15,12 +15,17 @@
 
   async function load() {
     try {
-      const data = await API.getScoreMatrix();
+      const [data, users] = await Promise.all([API.getScoreMatrix(), API.getUsers()]);
       const matches = data.matches || [];
       const rows = (data.matrix || []).slice().sort((a, b) => b.totalScore - a.totalScore);
 
-      // Encabezado
-      headerRow.innerHTML = `<th>Participante</th>`;
+      // El score-matrix solo trae el nombre del usuario, no su id, así que
+      // cruzamos por fullName contra /api/users para sacar el baseScore.
+      const baseScoreByName = new Map(users.map((u) => [u.fullName, u.baseScore]));
+
+      // Encabezado: Participante y Total van fijas al inicio, luego un partido
+      // por columna, y al final el puntaje base (para ver visualmente la suma).
+      headerRow.innerHTML = `<th class="col-name">Participante</th><th class="num col-total">Total</th>`;
       matches.forEach((m) => {
         const th = document.createElement("th");
         th.className = "num";
@@ -28,26 +33,35 @@
         th.textContent = UI.shortCode(m.opponents);
         headerRow.appendChild(th);
       });
-      const thTotal = document.createElement("th");
-      thTotal.className = "num";
-      thTotal.textContent = "Total";
-      headerRow.appendChild(thTotal);
+      const thBase = document.createElement("th");
+      thBase.className = "num";
+      thBase.textContent = "Base";
+      thBase.title = "Puntaje base (asignado antes de empezar la polla)";
+      headerRow.appendChild(thBase);
 
       // Filas
       bodyRows.innerHTML = "";
       if (!rows.length) {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="${matches.length + 2}" class="empty-state">Aún no hay datos de clasificación.</td>`;
+        tr.innerHTML = `<td colspan="${matches.length + 3}" class="empty-state">Aún no hay datos de clasificación.</td>`;
         bodyRows.appendChild(tr);
         return;
       }
 
       rows.forEach((row) => {
         const tr = document.createElement("tr");
+
         const tdName = document.createElement("th");
         tdName.scope = "row";
+        tdName.className = "col-name";
+        tdName.title = row.userName;
         tdName.textContent = row.userName;
         tr.appendChild(tdName);
+
+        const tdTotal = document.createElement("td");
+        tdTotal.className = "total col-total";
+        tdTotal.textContent = row.totalScore;
+        tr.appendChild(tdTotal);
 
         matches.forEach((m) => {
           const td = document.createElement("td");
@@ -57,10 +71,11 @@
           tr.appendChild(td);
         });
 
-        const tdTotal = document.createElement("td");
-        tdTotal.className = "total";
-        tdTotal.textContent = row.totalScore;
-        tr.appendChild(tdTotal);
+        const tdBase = document.createElement("td");
+        tdBase.className = "num subtle";
+        const baseScore = baseScoreByName.get(row.userName);
+        tdBase.textContent = baseScore !== undefined && baseScore !== null ? baseScore : "-";
+        tr.appendChild(tdBase);
 
         bodyRows.appendChild(tr);
       });

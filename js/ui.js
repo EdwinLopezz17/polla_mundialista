@@ -40,7 +40,17 @@ const UI = (() => {
     return `${abbr(parts[0])}-${abbr(parts[1])}`;
   }
 
+  // Tri-estado: true/false/null(aún no disponible para apostar). Se usa en
+  // celdas de tabla compactas (admin, transparencia).
   function boolLabel(v) {
+    if (v === null || v === undefined) return "-";
+    return v ? "Sí" : "No";
+  }
+
+  // Versión verbosa para líneas de detalle (mis apuestas): deja explícito que
+  // "no disponible" no es lo mismo que haber apostado "No".
+  function predictionLabel(v) {
+    if (v === null || v === undefined) return "No disponible";
     return v ? "Sí" : "No";
   }
 
@@ -77,6 +87,70 @@ const UI = (() => {
     if (el && session) el.textContent = session.fullName;
   }
 
+  // Estado de un partido respecto a las apuestas: abierta / bloqueada / cerrada
+  function matchStatus(match) {
+    if (match.fullTimeResult) return { label: "Cerrada", cls: "closed" };
+    if (minutesUntil(match.matchDate) <= CONFIG.CIERRE_MINUTOS) return { label: "Bloqueada", cls: "locked" };
+    return { label: "Abierta", cls: "pending" };
+  }
+
+  // Panel reutilizable: un partido + la tabla de pronósticos de todos los que apostaron.
+  // Se usa tanto en /admin (todos los partidos) como en clasifica.html (solo los bloqueados/cerrados,
+  // para que sea transparente cómo apostó cada quien una vez que ya no se puede cambiar el pronóstico).
+  function renderMatchBetsPanel(match, bets) {
+    const status = matchStatus(match);
+    const finished = !!match.fullTimeResult;
+
+    const sortedBets = bets
+      .slice()
+      .sort((a, b) => (a.user.fullName || "").localeCompare(b.user.fullName || ""));
+
+    const rowsHtml = sortedBets
+      .map((bet) => {
+        const isDraw = (bet.fullTimePrediction || "").toUpperCase() === "X";
+        return `
+          <tr>
+            <td>${bet.user.fullName}</td>
+            <td>${resultLabel(bet.fullTimePrediction, match.homeTeam, match.awayTeam)}</td>
+            <td>${isDraw ? teamLabel(bet.qualifiedTeamPrediction, match.homeTeam, match.awayTeam) : "-"}</td>
+            <td class="num">${bet.homeGoalsPrediction}-${bet.awayGoalsPrediction}</td>
+            <td class="num">${boolLabel(bet.penaltyPrediction)}</td>
+            <td class="num">${boolLabel(bet.yellowCardPrediction)}</td>
+            <td class="num">${boolLabel(bet.redCardPrediction)}</td>
+            ${finished ? `<td class="num">${bet.pointsEarned}</td>` : ""}
+          </tr>
+        `;
+      })
+      .join("");
+
+    const card = document.createElement("div");
+    card.className = "panel bet-row";
+    card.innerHTML = `
+      <div class="bet-row-top">
+        <span class="teams">${match.homeTeam} vs ${match.awayTeam}</span>
+        <span class="status-tag ${status.cls}">${status.label}</span>
+      </div>
+      <div class="bet-details">
+        <span>Fecha: ${formatDateTime(match.matchDate)}</span>
+        ${finished ? `<span>Resultado real: ${resultLabel(match.fullTimeResult, match.homeTeam, match.awayTeam)} (${match.homeGoals}-${match.awayGoals})</span>` : ""}
+      </div>
+      ${
+        sortedBets.length
+          ? `<div class="mini-table-wrap"><table>
+              <thead><tr>
+                <th>Usuario</th><th>Resultado</th><th>Clasifica</th>
+                <th class="num">Marcador</th><th class="num">Penal</th>
+                <th class="num">Amarilla</th><th class="num">Roja</th>
+                ${finished ? `<th class="num">Puntos</th>` : ""}
+              </tr></thead>
+              <tbody>${rowsHtml}</tbody>
+            </table></div>`
+          : `<p class="empty-state">Nadie ha apostado aún.</p>`
+      }
+    `;
+    return card;
+  }
+
   return {
     showMessage,
     clearMessage,
@@ -84,10 +158,13 @@ const UI = (() => {
     minutesUntil,
     shortCode,
     boolLabel,
+    predictionLabel,
     resultLabel,
     teamLabel,
     hitBadge,
     bindLogout,
-    paintUserBadge
+    paintUserBadge,
+    matchStatus,
+    renderMatchBetsPanel
   };
 })();

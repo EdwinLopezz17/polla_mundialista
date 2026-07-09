@@ -1,6 +1,3 @@
-// login.js
-// Lógica exclusiva de index.html: llenar el combo de usuarios y procesar el login.
-
 (function () {
   const form = document.getElementById("loginForm");
   const userSelect = document.getElementById("userSelect");
@@ -8,7 +5,6 @@
   const msgEl = document.getElementById("msg");
   const btnLogin = document.getElementById("btnLogin");
 
-  // Si ya hay sesión activa, saltar directo a apuestas.
   if (AUTH.getSession()) {
     window.location.href = "apuestas.html";
     return;

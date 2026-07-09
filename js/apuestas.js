@@ -53,23 +53,20 @@
         </div>
         <div class="f">
           <label>¿Habrá penal?</label>
-          <select name="penaltyPrediction" required>
-            <option value="false">No</option>
-            <option value="true">Sí</option>
+          <select name="penaltyPrediction" disabled>
+            <option value="">No disponible</option>
           </select>
         </div>
         <div class="f">
           <label>¿Tarjeta amarilla?</label>
-          <select name="yellowCardPrediction" required>
-            <option value="false">No</option>
-            <option value="true">Sí</option>
+          <select name="yellowCardPrediction" disabled>
+            <option value="">No disponible</option>
           </select>
         </div>
         <div class="f">
           <label>¿Tarjeta roja?</label>
-          <select name="redCardPrediction" required>
-            <option value="false">No</option>
-            <option value="true">Sí</option>
+          <select name="redCardPrediction" disabled>
+            <option value="">No disponible</option>
           </select>
         </div>
         <div class="f save-col">
@@ -85,9 +82,6 @@
       form.qualifiedTeamPrediction.value = existing.qualifiedTeamPrediction;
       form.homeGoalsPrediction.value = existing.homeGoalsPrediction;
       form.awayGoalsPrediction.value = existing.awayGoalsPrediction;
-      form.penaltyPrediction.value = String(existing.penaltyPrediction);
-      form.yellowCardPrediction.value = String(existing.yellowCardPrediction);
-      form.redCardPrediction.value = String(existing.redCardPrediction);
     }
 
     const form = card.querySelector("form");
@@ -99,8 +93,6 @@
     return card;
   }
 
-  // Solo permite dígitos: elimina en vivo cualquier signo "-" o punto decimal
-  // que el usuario intente escribir en el marcador.
   function sanitizeGoalsInput(input) {
     input.addEventListener("input", () => {
       const cleaned = input.value.replace(/[^0-9]/g, "");
@@ -144,9 +136,11 @@
       qualifiedTeamPrediction: form.qualifiedTeamPrediction.value,
       homeGoalsPrediction: Number(form.homeGoalsPrediction.value),
       awayGoalsPrediction: Number(form.awayGoalsPrediction.value),
-      penaltyPrediction: form.penaltyPrediction.value === "true",
-      yellowCardPrediction: form.yellowCardPrediction.value === "true",
-      redCardPrediction: form.redCardPrediction.value === "true"
+      // Penal/amarilla/roja aún no están habilitados para apostar: se envían
+      // explícitamente en null (los selects se muestran pero deshabilitados).
+      penaltyPrediction: null,
+      yellowCardPrediction: null,
+      redCardPrediction: null
     };
 
     try {

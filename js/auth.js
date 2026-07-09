@@ -1,8 +1,3 @@
-// auth.js
-// Maneja la sesión del usuario (guardada en sessionStorage) y protege las rutas.
-// No hay token real en el backend: el "pin correcto" es lo que abre la sesión
-// en el navegador. Mientras no exista sesión válida, el resto de páginas redirige al login.
-
 const AUTH = (() => {
   const STORAGE_KEY = "polla_session";
 

@@ -1,6 +1,3 @@
-// api.js
-// Toda la comunicación con el backend vive aquí. Ningún otro archivo hace fetch() directo.
-
 const API = (() => {
   const BASE = CONFIG.API_BASE_URL;
 
@@ -21,7 +18,6 @@ const API = (() => {
   }
 
   return {
-    // ---------- USERS ----------
     getUsers() {
       return fetch(`${BASE}/users`).then(handle);
     },
@@ -34,13 +30,10 @@ const API = (() => {
         method: "POST"
       }).then(handle);
     },
-
-    // ---------- MATCHES ----------
     getMatches() {
       return fetch(`${BASE}/matches`).then(handle);
     },
 
-    // ---------- BETS ----------
     getAllBets() {
       return fetch(`${BASE}/bets`).then(handle);
     },
@@ -58,7 +51,6 @@ const API = (() => {
       }).then(handle);
     },
 
-    // ---------- REPORTS ----------
     getScoreMatrix() {
       return fetch(`${BASE}/reports/score-matrix`).then(handle);
     }

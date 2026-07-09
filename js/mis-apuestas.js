@@ -1,7 +1,3 @@
-// mis-apuestas.js
-// Lista las apuestas del usuario: pendientes primero, cerradas al final con
-// el detalle de puntos ganados y qué predicciones acertó.
-
 (function () {
   const session = AUTH.requireAuth();
   if (!session) return;
@@ -29,9 +25,14 @@
     const scoreHit =
       bet.homeGoalsPrediction === match.homeGoals && bet.awayGoalsPrediction === match.awayGoals;
 
-    const penaltyHit = bet.penaltyPrediction === match.penaltyAwarded;
-    const yellowHit = bet.yellowCardPrediction === match.yellowCard;
-    const redHit = bet.redCardPrediction === match.redCard;
+    const penaltyApplies = bet.penaltyPrediction !== null && bet.penaltyPrediction !== undefined;
+    const penaltyHit = penaltyApplies && bet.penaltyPrediction === match.penaltyAwarded;
+
+    const yellowApplies = bet.yellowCardPrediction !== null && bet.yellowCardPrediction !== undefined;
+    const yellowHit = yellowApplies && bet.yellowCardPrediction === match.yellowCard;
+
+    const redApplies = bet.redCardPrediction !== null && bet.redCardPrediction !== undefined;
+    const redHit = redApplies && bet.redCardPrediction === match.redCard;
 
     return {
       resultHit,
@@ -39,8 +40,11 @@
       qualifiedApplies,
       qualifiedHit,
       scoreHit,
+      penaltyApplies,
       penaltyHit,
+      yellowApplies,
       yellowHit,
+      redApplies,
       redHit
     };
   }
@@ -58,9 +62,9 @@
         <span>Tu resultado: ${UI.resultLabel(bet.fullTimePrediction, match.homeTeam, match.awayTeam)}</span>
         ${bet.fullTimePrediction.toUpperCase() === "X" ? `<span>Clasifica: ${UI.teamLabel(bet.qualifiedTeamPrediction, match.homeTeam, match.awayTeam)}</span>` : ""}
         <span>Marcador: ${bet.homeGoalsPrediction} - ${bet.awayGoalsPrediction}</span>
-        <span>Penal: ${UI.boolLabel(bet.penaltyPrediction)}</span>
-        <span>Amarilla: ${UI.boolLabel(bet.yellowCardPrediction)}</span>
-        <span>Roja: ${UI.boolLabel(bet.redCardPrediction)}</span>
+        <span>Penal: ${UI.predictionLabel(bet.penaltyPrediction)}</span>
+        <span>Amarilla: ${UI.predictionLabel(bet.yellowCardPrediction)}</span>
+        <span>Roja: ${UI.predictionLabel(bet.redCardPrediction)}</span>
       </div>
     `;
     return row;
@@ -85,10 +89,10 @@
       <div class="hits">
         ${UI.hitBadge(hits.resultHit, "Resultado", hits.resultPoints)}
         ${hits.qualifiedApplies ? UI.hitBadge(hits.qualifiedHit, "Clasificado", 1) : `<span class="hit">— Clasificado (no aplicó)</span>`}
-        ${UI.hitBadge(hits.scoreHit, "Marcador exacto", 3)}
-        ${UI.hitBadge(hits.penaltyHit, "Penal", 1)}
-        ${UI.hitBadge(hits.yellowHit, "Amarilla", 1)}
-        ${UI.hitBadge(hits.redHit, "Roja", 1)}
+        ${UI.hitBadge(hits.scoreHit, "Marcador exacto", 1)}
+        ${hits.penaltyApplies ? UI.hitBadge(hits.penaltyHit, "Penal", 1) : `<span class="hit">— Penal (no disponible)</span>`}
+        ${hits.yellowApplies ? UI.hitBadge(hits.yellowHit, "Amarilla", 1) : `<span class="hit">— Amarilla (no disponible)</span>`}
+        ${hits.redApplies ? UI.hitBadge(hits.redHit, "Roja", 1) : `<span class="hit">— Roja (no disponible)</span>`}
       </div>
     `;
     return row;

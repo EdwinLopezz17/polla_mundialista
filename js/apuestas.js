@@ -129,15 +129,40 @@
     btn.disabled = true;
     btn.textContent = "Guardando…";
 
+    // --- NUEVA VALIDACIÓN DE MARCADOR COHERENTE ---
+    const homeGoals = Number(form.homeGoalsPrediction.value);
+    const awayGoals = Number(form.awayGoalsPrediction.value);
+    const prediction = form.fullTimePrediction.value;
+
+    if (prediction === "X" && homeGoals !== awayGoals) {
+      UI.showMessage(msgEl, "Si seleccionas Empate, el marcador debe tener la misma cantidad de goles en ambos equipos.", "error");
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      return;
+    }
+
+    if (prediction === "1" && homeGoals <= awayGoals) {
+      UI.showMessage(msgEl, "Si seleccionas que gana el Local, sus goles deben ser mayores que los del Visitante.", "error");
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      return;
+    }
+
+    if (prediction === "2" && awayGoals <= homeGoals) {
+      UI.showMessage(msgEl, "Si seleccionas que gana el Visitante, sus goles deben ser mayores que los del Local.", "error");
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      return;
+    }
+    // ----------------------------------------------
+
     const payload = {
       user: { id: session.userId },
       match: { id: matchId },
       fullTimePrediction: form.fullTimePrediction.value,
       qualifiedTeamPrediction: form.qualifiedTeamPrediction.value,
-      homeGoalsPrediction: Number(form.homeGoalsPrediction.value),
-      awayGoalsPrediction: Number(form.awayGoalsPrediction.value),
-      // Penal/amarilla/roja aún no están habilitados para apostar: se envían
-      // explícitamente en null (los selects se muestran pero deshabilitados).
+      homeGoalsPrediction: homeGoals,
+      awayGoalsPrediction: awayGoals,
       penaltyPrediction: null,
       yellowCardPrediction: null,
       redCardPrediction: null

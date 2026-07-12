@@ -11,14 +11,17 @@
 
   function computeHits(bet, match) {
     const isDraw = (match.fullTimeResult || "").toUpperCase() === "X";
+    // CORRECCIÓN: El clasificado solo aplica si el partido real fue empate Y el usuario también predijo empate
+    const userPredictedDraw = (bet.fullTimePrediction || "").toUpperCase() === "X";
 
     const resultHit =
       bet.fullTimePrediction.toUpperCase() === (match.fullTimeResult || "").toUpperCase();
     const resultPoints = isDraw ? 2 : 4;
 
-    const qualifiedApplies = isDraw;
+    // Modificado para que coincida exactamente con la regla del Backend
+    const qualifiedApplies = isDraw && userPredictedDraw;
     const qualifiedHit =
-      isDraw &&
+      qualifiedApplies &&
       (bet.qualifiedTeamPrediction || "").toUpperCase() ===
         (match.qualifiedTeam || "").toUpperCase();
 

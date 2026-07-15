@@ -53,20 +53,23 @@
         </div>
         <div class="f">
           <label>¿Habrá penal?</label>
-          <select name="penaltyPrediction" disabled>
-            <option value="">No disponible</option>
+          <select name="penaltyPrediction" required>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
           </select>
         </div>
         <div class="f">
           <label>¿Tarjeta amarilla?</label>
-          <select name="yellowCardPrediction" disabled>
-            <option value="">No disponible</option>
+          <select name="yellowCardPrediction" required>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
           </select>
         </div>
         <div class="f">
           <label>¿Tarjeta roja?</label>
-          <select name="redCardPrediction" disabled>
-            <option value="">No disponible</option>
+          <select name="redCardPrediction" required>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
           </select>
         </div>
         <div class="f save-col">
@@ -82,6 +85,17 @@
       form.qualifiedTeamPrediction.value = existing.qualifiedTeamPrediction;
       form.homeGoalsPrediction.value = existing.homeGoalsPrediction;
       form.awayGoalsPrediction.value = existing.awayGoalsPrediction;
+      
+      // Cargar valores de campos adicionales que ahora están habilitados
+      if (existing.penaltyPrediction !== null && existing.penaltyPrediction !== undefined) {
+        form.penaltyPrediction.value = String(existing.penaltyPrediction);
+      }
+      if (existing.yellowCardPrediction !== null && existing.yellowCardPrediction !== undefined) {
+        form.yellowCardPrediction.value = String(existing.yellowCardPrediction);
+      }
+      if (existing.redCardPrediction !== null && existing.redCardPrediction !== undefined) {
+        form.redCardPrediction.value = String(existing.redCardPrediction);
+      }
     }
 
     const form = card.querySelector("form");
@@ -163,9 +177,9 @@
       qualifiedTeamPrediction: form.qualifiedTeamPrediction.value,
       homeGoalsPrediction: homeGoals,
       awayGoalsPrediction: awayGoals,
-      penaltyPrediction: null,
-      yellowCardPrediction: null,
-      redCardPrediction: null
+      penaltyPrediction: form.penaltyPrediction.value === "true",
+      yellowCardPrediction: form.yellowCardPrediction.value === "true",
+      redCardPrediction: form.redCardPrediction.value === "true"
     };
 
     try {

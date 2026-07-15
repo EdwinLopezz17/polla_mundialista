@@ -1,7 +1,3 @@
-// clasifica.js
-// Renderiza la matriz de puntajes: filas = participantes, columnas = partidos
-// (abreviados a 3 letras por equipo), celdas = puntos obtenidos en ese partido.
-
 (function () {
   const session = AUTH.requireAuth();
   if (!session) return;
@@ -19,13 +15,14 @@
       const matches = data.matches || [];
       const rows = (data.matrix || []).slice().sort((a, b) => b.totalScore - a.totalScore);
 
-      // El score-matrix solo trae el nombre del usuario, no su id, así que
-      // cruzamos por fullName contra /api/users para sacar el baseScore.
       const baseScoreByName = new Map(users.map((u) => [u.fullName, u.baseScore]));
 
-      // Encabezado: Participante y Total van fijas al inicio, luego un partido
-      // por columna, y al final el puntaje base (para ver visualmente la suma).
-      headerRow.innerHTML = `<th class="col-name">Participante</th><th class="num col-total">Total</th>`;
+
+      headerRow.innerHTML = `
+        <th class="col-pos num">Pos</th>
+        <th class="col-name text-left">Participante</th>
+        <th class="num col-total">Total</th>
+      `;
       matches.forEach((m) => {
         const th = document.createElement("th");
         th.className = "num";
@@ -43,17 +40,49 @@
       bodyRows.innerHTML = "";
       if (!rows.length) {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="${matches.length + 3}" class="empty-state">Aún no hay datos de clasificación.</td>`;
+        tr.innerHTML = `<td colspan="${matches.length + 4}" class="empty-state">Aún no hay datos de clasificación.</td>`;
         bodyRows.appendChild(tr);
         return;
       }
 
-      rows.forEach((row) => {
+      let currentPos = 1;
+      let prevScore = null;
+      let skippedPositions = 0;
+
+      rows.forEach((row, index) => {
         const tr = document.createElement("tr");
+
+        if (prevScore !== null) {
+          if (row.totalScore === prevScore) {
+            skippedPositions++;
+          } else {
+            currentPos += skippedPositions + 1;
+            skippedPositions = 0;
+          }
+        }
+        prevScore = row.totalScore;
+
+        let posLabel = `${currentPos}.°`;
+        if (currentPos === 1) {
+          tr.className = "podium-1";
+          posLabel = "🥇 1.°";
+        } else if (currentPos === 2) {
+          tr.className = "podium-2";
+          posLabel = "🥈 2.°";
+        } else if (currentPos === 3) {
+          tr.className = "podium-3";
+          posLabel = "🥉 3.°";
+        }
+
+        // Columna Posición
+        const tdPos = document.createElement("td");
+        tdPos.className = "col-pos num text-left font-bold";
+        tdPos.innerHTML = posLabel;
+        tr.appendChild(tdPos);
 
         const tdName = document.createElement("th");
         tdName.scope = "row";
-        tdName.className = "col-name";
+        tdName.className = "col-name text-left";
         tdName.title = row.userName;
         tdName.textContent = row.userName;
         tr.appendChild(tdName);

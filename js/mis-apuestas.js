@@ -11,14 +11,12 @@
 
   function computeHits(bet, match) {
     const isDraw = (match.fullTimeResult || "").toUpperCase() === "X";
-    // CORRECCIÓN: El clasificado solo aplica si el partido real fue empate Y el usuario también predijo empate
     const userPredictedDraw = (bet.fullTimePrediction || "").toUpperCase() === "X";
 
     const resultHit =
       bet.fullTimePrediction.toUpperCase() === (match.fullTimeResult || "").toUpperCase();
     const resultPoints = isDraw ? 2 : 4;
 
-    // Modificado para que coincida exactamente con la regla del Backend
     const qualifiedApplies = isDraw && userPredictedDraw;
     const qualifiedHit =
       qualifiedApplies &&
@@ -93,9 +91,9 @@
         ${UI.hitBadge(hits.resultHit, "Resultado", hits.resultPoints)}
         ${hits.qualifiedApplies ? UI.hitBadge(hits.qualifiedHit, "Clasificado", 1) : `<span class="hit">— Clasificado (no aplicó)</span>`}
         ${UI.hitBadge(hits.scoreHit, "Marcador exacto", 1)}
-        ${hits.penaltyApplies ? UI.hitBadge(hits.penaltyHit, "Penal", 1) : `<span class="hit">— Penal (no disponible)</span>`}
-        ${hits.yellowApplies ? UI.hitBadge(hits.yellowHit, "Amarilla", 1) : `<span class="hit">— Amarilla (no disponible)</span>`}
-        ${hits.redApplies ? UI.hitBadge(hits.redHit, "Roja", 1) : `<span class="hit">— Roja (no disponible)</span>`}
+        ${hits.penaltyApplies ? UI.hitBadge(hits.penaltyHit, "Penal", 1) : `<span class="hit">— Penal (sin datos)</span>`}
+        ${hits.yellowApplies ? UI.hitBadge(hits.yellowHit, "Amarilla", 1) : `<span class="hit">— Amarilla (sin datos)</span>`}
+        ${hits.redApplies ? UI.hitBadge(hits.redHit, "Roja", 1) : `<span class="hit">— Roja (sin datos)</span>`}
       </div>
     `;
     return row;
